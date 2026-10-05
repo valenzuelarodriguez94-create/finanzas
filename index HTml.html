@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanzApp - Finanzas Personales Fáciles</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Font Family Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex h-screen overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex z-10">
+        <div>
+            <!-- Logo Section -->
+            <div class="p-6 flex items-center gap-3 border-b border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-md shadow-teal-200">
+                    <i data-lucide="wallet" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-800 text-lg leading-tight">FinanzApp</h1>
+                    <span class="text-xs text-teal-600 font-medium bg-teal-50 px-2 py-0.5 rounded-full">Principiantes</span>
+                </div>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="p-4 space-y-1">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all bg-teal-50 text-teal-700">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchTab('budget')" id="nav-budget" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                    <span>Mi Presupuesto</span>
+                </button>
+                <button onclick="switchTab('education')" id="nav-education" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                    <span>Consejos 50/30/20</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- User Info / Project Badge -->
+        <div class="p-4 border-t border-slate-100">
+            <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-4 rounded-2xl shadow-sm">
+                <div class="flex items-center gap-2 text-teal-400 mb-1">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span class="text-xs font-semibold tracking-wide uppercase">Proyecto UX/UI</span>
+                </div>
+                <p class="text-xs text-slate-300">Prototipo interactivo diseñado para fácil aprendizaje financiero.</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+
+        <!-- Top Header Bar -->
+        <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h2 id="page-title" class="text-xl font-bold text-slate-800">Resumen General</h2>
+            </div>
+
+            <!-- Action Buttons & Profile -->
+            <div class="flex items-center gap-3">
+                <button onclick="openModal('gasto')" class="flex items-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-2 rounded-xl text-sm font-medium transition-colors border border-rose-200">
+                    <i data-lucide="minus-circle" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Gasto</span>
+                </button>
+                <button onclick="openModal('ingreso')" class="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-all hover:shadow">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Ingreso</span>
+                </button>
+                <div class="h-6 w-px bg-slate-200 mx-1"></div>
+                <div class="flex items-center gap-3 pl-1">
+                    <div class="w-9 h-9 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center font-bold text-slate-600 text-sm">
+                        U
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace (Dynamic Tabs) -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar bg-slate-50">
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="tab-dashboard" class="space-y-6 max-w-7xl mx-auto">
+
+                <!-- Summary Cards Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Total Balance -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Saldo Disponible</span>
+                            <div class="p-2 bg-teal-50 text-teal-600 rounded-xl">
+                                <i data-lucide="wallet" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <p id="total-balance" class="text-2xl md:text-3xl font-extrabold text-slate-800">$0.00</p>
+                        <p class="text-xs text-slate-500 mt-2 flex items-center gap-1">
+                            <span class="text-teal-600 font-medium">Estado:</span> Saludable
+                        </p>
+                    </div>
+
+                    <!-- Income -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Ingresos este Mes</span>
+                            <div class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+                                <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <p id="total-income" class="text-2xl md:text-3xl font-extrabold text-emerald-600">$0.00</p>
+                        <p class="text-xs text-slate-500 mt-2">Dinero recibido acumulado</p>
+                    </div>
+
+                    <!-- Expenses -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Gastos este Mes</span>
+                            <div class="p-2 bg-rose-50 text-rose-600 rounded-xl">
+                                <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <p id="total-expense" class="text-2xl md:text-3xl font-extrabold text-rose-600">$0.00</p>
+                        <p class="text-xs text-slate-500 mt-2">Salidas de dinero registradas</p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Expenses Donut Chart -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base mb-1">¿En qué gastas tu dinero?</h3>
+                            <p class="text-xs text-slate-500 mb-4">Distribución por categoría</p>
+                        </div>
+                        <div class="relative flex justify-center items-center py-2">
+                            <canvas id="expenseChart" width="200" height="200"></canvas>
+                        </div>
+                        <div id="chart-legend" class="mt-4 grid grid-cols-2 gap-2 text-xs">
+                            <!-- Legend items generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Monthly Flow Bar Chart -->
+                    <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base">Comparativa Financiera</h3>
+                                <p class="text-xs text-slate-500">Relación visual de Ingresos vs Gastos</p>
+                            </div>
+                            <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Este Mes</span>
+                        </div>
+                        <div class="h-48 w-full flex items-center justify-center">
+                            <canvas id="barChart" class="w-full h-full"></canvas>
+                        </div>
+                        <div class="flex justify-center gap-6 mt-4 text-xs font-medium">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                                <span class="text-slate-600">Ingresos</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+                                <span class="text-slate-600">Gastos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions Block -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Últimos Movimientos</h3>
+                            <p class="text-xs text-slate-500">Historial reciente de tus transacciones</p>
+                        </div>
+                        
+                        <!-- Filter Tabs -->
+                        <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-medium self-start sm:self-auto">
+                            <button onclick="filterTransactions('all')" id="filter-all" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-slate-800 transition-all">Todos</button>
+                            <button onclick="filterTransactions('ingreso')" id="filter-ingreso" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition-all">Ingresos</button>
+                            <button onclick="filterTransactions('gasto')" id="filter-gasto" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition-all">Gastos</button>
+                        </div>
+                    </div>
+
+                    <!-- Transactions List -->
+                    <div id="transaction-list" class="divide-y divide-slate-100">
+                        <!-- Dynamic Item Render -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: MI PRESUPUESTO -->
+            <section id="tab-budget" class="hidden space-y-6 max-w-7xl mx-auto">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-lg mb-2">Meta de Gastos Mensual</h3>
+                    <p class="text-sm text-slate-500 mb-6">Establece límites simples para no gastar más de la cuenta.</p>
+                    
+                    <div class="space-y-6 max-w-2xl">
+                        <!-- Category Limit Progress Item -->
+                        <div>
+                            <div class="flex justify-between text-sm font-medium mb-2">
+                                <span class="text-slate-700 flex items-center gap-2">
+                                    <i data-lucide="shopping-bag" class="w-4 h-4 text-purple-500"></i> Comida y Alimentación
+                                </span>
+                                <span class="text-slate-500"><strong class="text-slate-800" id="b-food-used">$0</strong> / $300.00</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div id="b-food-bar" class="bg-purple-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-sm font-medium mb-2">
+                                <span class="text-slate-700 flex items-center gap-2">
+                                    <i data-lucide="tv" class="w-4 h-4 text-blue-500"></i> Entretenimiento
+                                </span>
+                                <span class="text-slate-500"><strong class="text-slate-800" id="b-ent-used">$0</strong> / $150.00</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div id="b-ent-bar" class="bg-blue-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-sm font-medium mb-2">
+                                <span class="text-slate-700 flex items-center gap-2">
+                                    <i data-lucide="home" class="w-4 h-4 text-amber-500"></i> Servicios y Hogar
+                                </span>
+                                <span class="text-slate-500"><strong class="text-slate-800" id="b-home-used">$0</strong> / $400.00</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div id="b-home-bar" class="bg-amber-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: CONSEJOS Y REGLA 50/30/20 -->
+            <section id="tab-education" class="hidden space-y-6 max-w-7xl mx-auto">
+                <div class="bg-gradient-to-r from-teal-700 to-teal-900 text-white p-6 md:p-8 rounded-2xl shadow-md">
+                    <div class="max-w-xl">
+                        <span class="bg-teal-500/30 text-teal-200 text-xs font-semibold px-3 py-1 rounded-full border border-teal-400/30">Educación Financiera</span>
+                        <h3 class="text-2xl font-bold mt-3 mb-2">La Regla de Oro: 50 / 30 / 20</h3>
+                        <p class="text-slate-200 text-sm leading-relaxed">
+                            Una método súper sencillo para principiantes. Divide tus ingresos mensuales en 3 presupuestos para mantener equilibrio financiero sin complicaciones.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Cards 50 30 20 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- 50% -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-teal-500"></div>
+                        <div class="text-3xl font-black text-teal-600 mb-2">50%</div>
+                        <h4 class="font-bold text-slate-800 text-lg mb-2">Necesidades Básicas</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            Gastos indispensables para vivir. Si no los pagas, afectan tu día a día.
+                        </p>
+                        <ul class="text-xs text-slate-500 space-y-1.5 list-disc pl-4">
+                            <li>Renta o vivienda</li>
+                            <li>Comida básica y súper</li>
+                            <li>Servicios (Luz, agua, internet)</li>
+                            <li>Transporte</li>
+                        </ul>
+                    </div>
+
+                    <!-- 30% -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-sky-500"></div>
+                        <div class="text-3xl font-black text-sky-600 mb-2">30%</div>
+                        <h4 class="font-bold text-slate-800 text-lg mb-2">Deseos y Gustos</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            Cosas que mejoran tu estilo de vida pero no son de vida o muerte.
+                        </p>
+                        <ul class="text-xs text-slate-500 space-y-1.5 list-disc pl-4">
+                            <li>Salidas con amigos / Restaurantes</li>
+                            <li>Suscripciones (Netflix, Spotify)</li>
+                            <li>Ropa nueva o hobbies</li>
+                            <li>Viajes y entretenimiento</li>
+                        </ul>
+                    </div>
+
+                    <!-- 20% -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-emerald-500"></div>
+                        <div class="text-3xl font-black text-emerald-600 mb-2">20%</div>
+                        <h4 class="font-bold text-slate-800 text-lg mb-2">Ahorro e Inversión</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            Tu "yo del futuro". Dinero destinado a darte paz mental y seguridad.
+                        </p>
+                        <ul class="text-xs text-slate-500 space-y-1.5 list-disc pl-4">
+                            <li>Fondo de emergencia</li>
+                            <li>Pago de deudas pendientes</li>
+                            <li>Inversiones a futuro</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Calculator interactive widget -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <h4 class="font-bold text-slate-800 mb-1">Calculadora Instantánea 50/30/20</h4>
+                    <p class="text-xs text-slate-500 mb-4">Ingresa tu ingreso mensual estimado para ver cómo distribuirlo:</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 items-center">
+                        <div class="relative w-full sm:w-64">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-bold">$</span>
+                            <input type="number" id="calc-input" placeholder="Ej. 1000" value="1000" oninput="calculateRule()" class="w-full pl-8 pr-4 py-2 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-teal-500">
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 w-full text-center">
+                            <div class="bg-teal-50 p-2 rounded-xl">
+                                <span class="text-xs text-teal-700 block">Necesidades (50%)</span>
+                                <strong id="calc-50" class="text-sm text-teal-900">$500</strong>
+                            </div>
+                            <div class="bg-sky-50 p-2 rounded-xl">
+                                <span class="text-xs text-sky-700 block">Deseos (30%)</span>
+                                <strong id="calc-30" class="text-sm text-sky-900">$300</strong>
+                            </div>
+                            <div class="bg-emerald-50 p-2 rounded-xl">
+                                <span class="text-xs text-emerald-700 block">Ahorro (20%)</span>
+                                <strong id="calc-20" class="text-sm text-emerald-900">$200</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Registration Form -->
+    <div id="modal-bg" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-200" id="modal-box">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="modal-title" class="text-lg font-bold text-slate-800">Registrar Movimiento</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="transaction-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <input type="hidden" id="form-type" value="gasto">
+
+                <!-- Type Selector -->
+                <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl text-xs font-medium">
+                    <button type="button" id="btn-type-gasto" onclick="setType('gasto')" class="py-2 rounded-lg bg-white shadow text-rose-600 font-bold">Gasto</button>
+                    <button type="button" id="btn-type-ingreso" onclick="setType('ingreso')" class="py-2 rounded-lg text-slate-600">Ingreso</button>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Concepto / Descripción</label>
+                    <input type="text" id="form-desc" required placeholder="Ej. Compra de supermercado, Salario" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-teal-500">
+                </div>
+
+                <!-- Amount -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Monto ($)</label>
+                    <input type="number" step="0.01" id="form-amount" required placeholder="0.00" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-teal-500">
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Categoría</label>
+                    <select id="form-category" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-teal-500 bg-white">
+                        <option value="Comida">Comida y Alimentos</option>
+                        <option value="Entretenimiento">Entretenimiento / Gustos</option>
+                        <option value="Servicios">Servicios y Hogar</option>
+                        <option value="Trabajo">Salario / Trabajo</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3 pt-3">
+                    <button type="button" onclick="closeModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50">Cancelar</button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium shadow-sm">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <script>
+        // Initial Mock Data
+        let transactions = [
+            { id: 1, type: 'ingreso', desc: 'Pago de Salario', amount: 1200, category: 'Trabajo', date: '2026-10-01' },
+            { id: 2, type: 'gasto', desc: 'Súper Semanal', amount: 85.50, category: 'Comida', date: '2026-10-02' },
+            { id: 3, type: 'gasto', desc: 'Suscripción Netflix', amount: 15.00, category: 'Entretenimiento', date: '2026-10-03' },
+            { id: 4, type: 'gasto', desc: 'Pago de Luz', amount: 45.00, category: 'Servicios', date: '2026-10-04' }
+        ];
+
+        let currentFilter = 'all';
+
+        // Initialize Application
+        window.onload = function() {
+            lucide.createIcons();
+            renderApp();
+            calculateRule();
+        };
+
+        // Render Application
+        function renderApp() {
+            renderTransactions();
+            updateSummaryCards();
+            drawCharts();
+            updateBudgets();
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            ['dashboard', 'budget', 'education'].forEach(tab => {
+                document.getElementById(`tab-${tab}`).classList.add('hidden');
+                document.getElementById(`nav-${tab}`).className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900";
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all bg-teal-50 text-teal-700 font-semibold";
+
+            // Update title
+            const titles = {
+                'dashboard': 'Resumen General',
+                'budget': 'Mi Presupuesto',
+                'education': 'Aprende la Regla 50/30/20'
+            };
+            document.getElementById('page-title').innerText = titles[tabId];
+
+            if(tabId === 'dashboard') {
+                drawCharts();
+            }
+        }
+
+        // Summary Totals
+        function updateSummaryCards() {
+            const income = transactions.filter(t => t.type === 'ingreso').reduce((acc, t) => acc + t.amount, 0);
+            const expense = transactions.filter(t => t.type === 'gasto').reduce((acc, t) => acc + t.amount, 0);
+            const balance = income - expense;
+
+            document.getElementById('total-balance').innerText = `$${balance.toFixed(2)}`;
+            document.getElementById('total-income').innerText = `$${income.toFixed(2)}`;
+            document.getElementById('total-expense').innerText = `$${expense.toFixed(2)}`;
+        }
+
+        // Render Transaction List
+        function renderTransactions() {
+            const container = document.getElementById('transaction-list');
+            container.innerHTML = '';
+
+            const filtered = transactions.filter(t => {
+                if (currentFilter === 'all') return true;
+                return t.type === currentFilter;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">No hay movimientos registrados.</p>`;
+                return;
+            }
+
+            filtered.forEach(t => {
+                const isIncome = t.type === 'ingreso';
+                const iconName = isIncome ? 'arrow-down-left' : 'shopping-bag';
+                const iconBg = isIncome ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600';
+                const amountClass = isIncome ? 'text-emerald-600 font-bold' : 'text-slate-800 font-bold';
+                const sign = isIncome ? '+' : '-';
+
+                const item = document.createElement('div');
+                item.className = 'py-3 flex items-center justify-between hover:bg-slate-50/50 px-2 rounded-xl transition-colors';
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center">
+                            <i data-lucide="${iconName}" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-800">${t.desc}</p>
+                            <span class="text-xs text-slate-400">${t.category} • ${t.date}</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm ${amountClass}">${sign}$${t.amount.toFixed(2)}</p>
+                        <button onclick="deleteTransaction(${t.id})" class="text-xs text-slate-300 hover:text-rose-500 transition-colors">Eliminar</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        // Filter transactions
+        function filterTransactions(type) {
+            currentFilter = type;
+            ['all', 'ingreso', 'gasto'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === type) {
+                    btn.className = "px-3 py-1.5 rounded-lg bg-white shadow-sm text-slate-800 font-semibold transition-all";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition-all";
+                }
+            });
+            renderTransactions();
+        }
+
+        // Delete transaction
+        function deleteTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            renderApp();
+            showToast("Registro eliminado con éxito", "info");
+        }
+
+        // Canvas Donut & Bar Charts
+        function drawCharts() {
+            // Donut Chart
+            const canvas = document.getElementById('expenseChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const expenses = transactions.filter(t => t.type === 'gasto');
+            const catTotals = {};
+            let totalExp = 0;
+
+            expenses.forEach(t => {
+                catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
+                totalExp += t.amount;
+            });
+
+            const colors = ['#a855f7', '#3b82f6', '#f59e0b', '#ec4899', '#64748b'];
+            let startAngle = 0;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 70;
+
+            const legendContainer = document.getElementById('chart-legend');
+            legendContainer.innerHTML = '';
+
+            if (totalExp === 0) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 20;
+                ctx.stroke();
+                legendContainer.innerHTML = '<span class="col-span-2 text-center text-slate-400">Sin gastos aún</span>';
+                return;
+            }
+
+            let colorIdx = 0;
+            for (let cat in catTotals) {
+                const sliceAngle = (catTotals[cat] / totalExp) * 2 * Math.PI;
+                const color = colors[colorIdx % colors.length];
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 22;
+                ctx.stroke();
+
+                startAngle += sliceAngle;
+
+                // Legend
+                legendContainer.innerHTML += `
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${color}"></span>
+                        <span class="text-slate-600 truncate">${cat}</span>
+                    </div>
+                `;
+                colorIdx++;
+            }
+
+            // Bar Chart
+            const barCanvas = document.getElementById('barChart');
+            if(!barCanvas) return;
+            const bCtx = barCanvas.getContext('2d');
+            bCtx.clearRect(0, 0, barCanvas.width, barCanvas.height);
+
+            const income = transactions.filter(t => t.type === 'ingreso').reduce((acc, t) => acc + t.amount, 0);
+            const expense = totalExp;
+            const maxVal = Math.max(income, expense, 100);
+
+            const barWidth = 40;
+            const maxHeight = 120;
+
+            const incHeight = (income / maxVal) * maxHeight;
+            const expHeight = (expense / maxVal) * maxHeight;
+
+            // Income Bar
+            bCtx.fillStyle = '#10b981';
+            bCtx.beginPath();
+            bCtx.roundRect(80, 150 - incHeight, barWidth, incHeight, 8);
+            bCtx.fill();
+
+            // Expense Bar
+            bCtx.fillStyle = '#f43f5e';
+            bCtx.beginPath();
+            bCtx.roundRect(160, 150 - expHeight, barWidth, expHeight, 8);
+            bCtx.fill();
+        }
+
+        // Budget Tab Calculations
+        function updateBudgets() {
+            const foodSpent = transactions.filter(t => t.category === 'Comida' && t.type === 'gasto').reduce((a, b) => a + b.amount, 0);
+            const entSpent = transactions.filter(t => t.category === 'Entretenimiento' && t.type === 'gasto').reduce((a, b) => a + b.amount, 0);
+            const homeSpent = transactions.filter(t => t.category === 'Servicios' && t.type === 'gasto').reduce((a, b) => a + b.amount, 0);
+
+            document.getElementById('b-food-used').innerText = `$${foodSpent.toFixed(2)}`;
+            document.getElementById('b-food-bar').style.width = `${Math.min((foodSpent / 300) * 100, 100)}%`;
+
+            document.getElementById('b-ent-used').innerText = `$${entSpent.toFixed(2)}`;
+            document.getElementById('b-ent-bar').style.width = `${Math.min((entSpent / 150) * 100, 100)}%`;
+
+            document.getElementById('b-home-used').innerText = `$${homeSpent.toFixed(2)}`;
+            document.getElementById('b-home-bar').style.width = `${Math.min((homeSpent / 400) * 100, 100)}%`;
+        }
+
+        // Rule 50/30/20 Calculator
+        function calculateRule() {
+            const val = parseFloat(document.getElementById('calc-input').value) || 0;
+            document.getElementById('calc-50').innerText = `$${(val * 0.50).toFixed(2)}`;
+            document.getElementById('calc-30').innerText = `$${(val * 0.30).toFixed(2)}`;
+            document.getElementById('calc-20').innerText = `$${(val * 0.20).toFixed(2)}`;
+        }
+
+        // Modal Controls
+        function openModal(type = 'gasto') {
+            setType(type);
+            const bg = document.getElementById('modal-bg');
+            const box = document.getElementById('modal-box');
+            bg.classList.remove('hidden');
+            setTimeout(() => {
+                bg.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+                box.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const bg = document.getElementById('modal-bg');
+            const box = document.getElementById('modal-box');
+            bg.classList.add('opacity-0');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+            setTimeout(() => {
+                bg.classList.add('hidden');
+            }, 200);
+        }
+
+        function setType(type) {
+            document.getElementById('form-type').value = type;
+            const btnGasto = document.getElementById('btn-type-gasto');
+            const btnIngreso = document.getElementById('btn-type-ingreso');
+
+            if (type === 'gasto') {
+                btnGasto.className = "py-2 rounded-lg bg-white shadow text-rose-600 font-bold";
+                btnIngreso.className = "py-2 rounded-lg text-slate-600";
+            } else {
+                btnIngreso.className = "py-2 rounded-lg bg-white shadow text-emerald-600 font-bold";
+                btnGasto.className = "py-2 rounded-lg text-slate-600";
+            }
+        }
+
+        // Form Submit
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const type = document.getElementById('form-type').value;
+            const desc = document.getElementById('form-desc').value;
+            const amount = parseFloat(document.getElementById('form-amount').value);
+            const category = document.getElementById('form-category').value;
+
+            const newTransaction = {
+                id: Date.now(),
+                type,
+                desc,
+                amount,
+                category,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            transactions.unshift(newTransaction);
+            renderApp();
+            closeModal();
+            document.getElementById('transaction-form').reset();
+            showToast(`${type === 'ingreso' ? 'Ingreso' : 'Gasto'} guardado correctamente`, "success");
+        }
+
+        // Toast Message Notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-slate-800 text-white' : 'bg-slate-700 text-white';
+            
+            toast.className = `${bgClass} px-4 py-3 rounded-xl shadow-xl text-xs font-medium flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-teal-400"></i> ${message}`;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
